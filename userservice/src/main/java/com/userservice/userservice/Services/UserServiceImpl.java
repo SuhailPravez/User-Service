@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
         // Step 2: Call Rating Service to get list of ratings for this user
         Rating[] ratingsArray = restTemplate.getForObject(
-            "http://localhost:8083/rating/user/" + user.getUserId(), Rating[].class
+            "http://RATING-SERVICE/rating/user/" + user.getUserId(), Rating[].class
         );
         logger.info("Fetched Ratings for user [{}]: {}", userId, ratingsArray);
 
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
         List<Rating> enrichedRatings = ratings.stream().map(rating -> {
             // Call Hotel Service by hotelId
             ResponseEntity<Hotel> hotelResponse = restTemplate.getForEntity(
-                "http://localhost:8082/hotels/" + rating.getHotelId(), Hotel.class
+                "http://HOTEL-SERVICE/hotels/" + rating.getHotelId(), Hotel.class
             );
 
             Hotel hotel = hotelResponse.getBody();
