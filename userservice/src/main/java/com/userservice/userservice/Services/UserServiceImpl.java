@@ -17,6 +17,7 @@ import com.userservice.userservice.Entities.Hotel;
 import com.userservice.userservice.Entities.Rating;
 import com.userservice.userservice.Entities.User;
 import com.userservice.userservice.Exceptions.ResourceNotFoundException;
+import com.userservice.userservice.External.Services.HotelService;
 import com.userservice.userservice.Repositories.UserRepository;
 
 /**
@@ -30,6 +31,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private HotelService hotelService;
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -83,15 +87,15 @@ public class UserServiceImpl implements UserService {
         // Step 4: For each rating, fetch hotel details from Hotel Service
         List<Rating> enrichedRatings = ratings.stream().map(rating -> {
             // Call Hotel Service by hotelId
-            ResponseEntity<Hotel> hotelResponse = restTemplate.getForEntity(
-                "http://HOTEL-SERVICE/hotels/" + rating.getHotelId(), Hotel.class
-            );
+            // ResponseEntity<Hotel> hotelResponse = restTemplate.getForEntity(
+            //     "http://HOTEL-SERVICE/hotels/" + rating.getHotelId(), Hotel.class
+            // );
 
-            Hotel hotel = hotelResponse.getBody();
-            logger.info("Fetched Hotel [{}] for Rating [{}]. Status Code: {}", 
-                        hotel != null ? hotel.getId() : "null",
-                        rating.getRatingId(),
-                        hotelResponse.getStatusCode());
+            Hotel hotel = hotelService.getHotel(rating.getHotelId());
+            // logger.info("Fetched Hotel [{}] for Rating [{}]. Status Code: {}", 
+            //             hotel != null ? hotel.getId() : "null",
+            //             rating.getRatingId(),
+            //             hotelResponse.getStatusCode());
 
             // Bind hotel details to rating
             rating.setHotel(hotel);
